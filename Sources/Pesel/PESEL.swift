@@ -99,7 +99,10 @@ public struct PESEL: Sendable, Hashable {
   @discardableResult
   public init(_ rawValue: String) throws(PESEL.Failure) {
     self._rawValue = try pesel(from: rawValue)
-    if 1...31 ~= self.day || 1...12 ~= self.month {
+    guard
+      (1...31 ~= self.day) ||
+      (1...12 ~= self.month)
+    else {
       throw PESEL.Failure.invalidDate(
         day,
         month,
