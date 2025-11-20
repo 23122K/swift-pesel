@@ -60,7 +60,7 @@ extension PeselTests {
   Mock
   O1234567890
   78812381*1d
-  
+  .
   """#
   .split(separator: "\n")
   .map(String.init)
