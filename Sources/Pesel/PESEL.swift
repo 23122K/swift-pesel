@@ -42,8 +42,12 @@ public struct PESEL: Sendable, Hashable {
   /// - 40 for 21th century
   /// - 60 for 22th century
   public var month: Int {
+    self._month % 20
+  }
+  
+  public var _month: Int {
     Int(self._rawValue[2]) * 10 +
-    Int(self._rawValue[3]) % 20
+    Int(self._rawValue[3])
   }
   
   /// The birth date of the person associated with a given PESEL number.
@@ -71,7 +75,7 @@ public struct PESEL: Sendable, Hashable {
 #endif
   
   private var _centuryRangeUnderlayingYear: Int {
-    switch self._rawValue[2] * 10 + self._rawValue[3] {
+    switch self._month {
     case 0...12:
       return 1900
       
@@ -88,14 +92,14 @@ public struct PESEL: Sendable, Hashable {
       return 1800
       
     default:
-      return -1
+      preconditionFailure("Invalid century range for \(self.month) month")
     }
   }
   
   @discardableResult
   public init(_ rawValue: String) throws(PESEL.Failure) {
     self._rawValue = try pesel(from: rawValue)
-    if self.day == 0 || self.month == 0 {
+    if 1...31 ~= self.day || 1...12 ~= self.month {
       throw PESEL.Failure.invalidDate(
         day,
         month,
